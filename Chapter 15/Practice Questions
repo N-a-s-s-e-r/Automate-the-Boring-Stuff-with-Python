@@ -1,0 +1,126 @@
+1. A string value of the PDF filename is not passed to the PyPDF2.PdfFileReader() function. What do you pass to the function instead?
+This is because as of PyPDF2, base classes were renamed so that they also allow to operate with ByteIO streams instead of files i.e. PdfFileReader -to- PdfReader
+------------------------------------------------------------------------
+
+
+2. What modes do the File objects for PdfFileReader() and PdfFileWriter() need to be opened in?
+First and foremost, both PdfFileReader() and PdfFileWriter() were renamed to PdfReader() and PdfWriter()
+
+PdfReader() uses the syntax below:
+PyPDF2.PdfReader(stream: Union[str, IO, Path], strict: bool = False, password: Union[None, str, bytes] = None)
+where, stream –is- A File object or an object that supports the standard read and seek methods similar to a File object. Could also be a string representing a path to a PDF file.
+eg.
+FileObj = open('meetingminutes.pdf', 'rb')
+reader = FileReader(FileObj)
+
+
+PdfWriter() uses the syntax below:
+PyPDF2.PdfWriter(fileobj: Union[str, IO] = '')
+where, fileobj -is- A File object or an object that supports the standard write methods similar to a File object. 
+eg.
+merger = PdfWriter()
+output = open("document-output.pdf", "wb")
+merger.write(output)
+------------------------------------------------------------------------
+
+
+3. How do you acquire a Page object for page 5 from a PdfFileReader object?
+Assuming that I have PdfReader object saved into a variable called reader, I would use: reader.pages[4]
+
+eg.
+from PyPDF2 import PdfReader, PdfWriter
+reader = PdfReader("Weighting.pdf")
+
+page = reader.pages[4]
+print(page.extract_text())
+------------------------------------------------------------------------
+
+
+4. What PdfFileReader variable stores the number of pages in the PDF document?
+len(reader.pages)
+------------------------------------------------------------------------
+
+
+
+5. If a PdfFileReader object’s PDF is encrypted with the password swordfish, what must you do before you can obtain Page objects from it?
+You must decrypt using:		
+Assuming that I have PdfReader object saved into a variable called reader, I would use: reader.decrypt("swordfish")
+------------------------------------------------------------------------
+
+
+
+6. What methods do you use to rotate a page?
+By using rotate() method on the page object ie. rotate(angle: int) or rotate(int) N.B. It must be in increments of 90 degrees
+eg.
+A rotation clockwise 90 degrees:
+reader.pages[1].rotate(90)
+------------------------------------------------------------------------
+
+
+
+
+7. What method returns a Document object for a file named demo.docx?
+That would be: Document() method and used as: 
+doc = docx.Document('demo.docx')     or      Document('demo.docx')
+------------------------------------------------------------------------
+
+
+
+8. What is the difference between a Paragraph object and a Run object?
+A paragraph object has like all the block-level formatting, like indentation, line height, tabs, and so forth.
+Whereas
+Character-level formatting, such as bold and italic, are applied to the run objects. 
+That is, all content within a paragraph must be within a run, but there can be more than one. So a paragraph with a bold word in the middle would need three runs, a normal one, a bold one containing the word, and another normal one for the text after.
+------------------------------------------------------------------------
+
+
+
+9. How do you obtain a list of Paragraph objects for a Document object that’s stored in a variable named doc?
+def getText(filename):
+    doc = docx.Document(filename)
+    fullText = []
+    for para in doc.paragraphs:
+        fullText.append(para.text)
+    return ''.join(fullText)
+
+print(getText('test.docx'))
+------------------------------------------------------------------------
+10. What type of object has bold, underline, italic, strike, and outline variables?
+Run Object(even a Font Object)
+------------------------------------------------------------------------
+
+
+
+11. What is the difference between setting the bold variable to True, False, or None?
+True (the attribute is always enabled, no matter what other styles are applied to the run)
+False (the attribute is always disabled)
+None (defaults to whatever the run’s style is set to)
+------------------------------------------------------------------------
+
+
+
+12. How do you create a Document object for a new Word document?
+doc = docx.Document()
+
+------------------------------------------------------------------------
+
+
+
+13. How do you add a paragraph with the text 'Hello, there!' to a Document object stored in a variable named doc?
+Using:
+doc.add_paragraph('Hello, there!')
+doc.save('helloworld.docx')
+------------------------------------------------------------------------
+
+
+
+14. What integers represent the levels of headings available in Word documents?
+0 - Title style
+1 - Main heading
+2-4 - Decreasing Sub headings
+
+eg.
+doc = docx.Document()
+doc.add_heading('Header 0', 0)
+doc.save('headings.docx')
+------------------------------------------------------------------------
